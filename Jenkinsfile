@@ -3,14 +3,14 @@ pipeline {
 
     environment {
         AWS_REGION = 'ap-south-1'
-        ACCOUNT_ID = 'YOUR_ACCOUNT_ID'
+        ACCOUNT_ID = '026870878274'
     }
 
     stages {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/YOUR_USERNAME/StreamingApp.git'
+                git 'https://github.com/bennieshs54-collab/StreamingApp.git'
             }
         }
 
