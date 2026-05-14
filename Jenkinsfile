@@ -1,22 +1,32 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_REGION = 'ap-south-1'
+        ACCOUNT_ID = '026870878274'
+    }
+
     stages {
+
         stage('Clone') {
             steps {
-                checkout scm
+                git 'https://github.com/bennieshs54-collab/StreamingApp.git'
             }
         }
 
-        stage('Build') {
+        stage('Build Backend') {
             steps {
-                echo 'Building app...'
+                dir('backend') {
+                    sh 'docker build -t backend .'
+                }
             }
         }
 
-        stage('Test') {
+        stage('Build Frontend') {
             steps {
-                echo 'Running tests...'
+                dir('frontend') {
+                    sh 'docker build -t frontend .'
+                }
             }
         }
     }
