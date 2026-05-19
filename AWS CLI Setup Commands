@@ -1,6 +1,30 @@
 aws configure
 
-AWS Access Key ID:
-AWS Secret Access Key:
+AWS Access Key ID:026870878274
+AWS Secret Access Key:oZA/+pb+tW1N9Vdw0KRjLCQ2yiNsyJAfC9v5AeQx
 Region: ap-south-1
 Output Format: json
+
+aws ecr create-repository --repository-name streamingapp-backend
+
+aws ecr create-repository --repository-name streamingapp-frontend
+
+Create EKS Cluster
+eksctl create cluster \
+--name streaming-cluster \
+--region ap-south-1 \
+--nodegroup-name standard-workers \
+--node-type t3.medium \
+--nodes 2
+
+CloudWatch Logging Setup
+kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml
+
+SNS + Slack/Telegram Integration
+aws sns create-topic --streaming-app deployment-alerts
+
+Subscribe Email:
+aws sns subscribe \
+--topic-arn Sreaming-app \
+--protocol email \
+--notification-endpoint bennieshs54@gmail.com
