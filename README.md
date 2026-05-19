@@ -1,138 +1,213 @@
-# StreamingApp
+# StreamingApp - Orchestration and Scaling Project
 
-Stream premium video content, host live watch parties, and manage your catalogue with a modern microservice architecture. The platform now ships with a production-ready admin portal, real-time chat, S3-backed adaptive streaming, and a redesigned cinematic frontend experience.
+## Project Overview
 
-## Architecture
+This project demonstrates the deployment, orchestration, CI/CD automation, scaling, and monitoring of a MERN Stack Streaming Application using AWS cloud services.
 
-| Service | Port | Description |
-| --- | --- | --- |
-| `authService` | 3001 | User authentication, registration, JWT issuance |
-| `streamingService` | 3002 | Video catalogue, S3 playback endpoints, public APIs |
-| `adminService` | 3003 | Dedicated admin microservice for asset management and uploads |
-| `chatService` | 3004 | Websocket + REST chat for live watch parties |
-| `frontend` | 3000 | React SPA with revamped UI and integrated chat |
-| `mongo` | 27017 | Shared MongoDB instance |
+The project includes:
 
-All backend services share common database models and utilities through `backend/common`.
+- Docker Containerization
+- Jenkins CI/CD Pipeline
+- Amazon ECR
+- Amazon EKS
+- Helm Charts
+- CloudWatch Monitoring
+- Kubernetes Scaling
 
-## Environment Configuration
+---
 
-Create an `.env` for each service (or export variables before running). All services accept the standard AWS credentials for S3 access.
+# Technology Stack
 
-### Auth Service (`backend/authService/.env`)
-```ini
-PORT=3001
-MONGO_URI=mongodb://localhost:27017/streamingapp
-JWT_SECRET=changeme
-CLIENT_URLS=http://localhost:3000
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=ap-south-1
-AWS_S3_BUCKET=
-```
+| Technology | Purpose |
+|---|---|
+| React.js | Frontend |
+| Node.js | Backend |
+| Express.js | API |
+| MongoDB | Database |
+| Docker | Containerization |
+| Jenkins | CI/CD |
+| Amazon ECR | Image Repository |
+| Amazon EKS | Kubernetes Cluster |
+| Helm | Kubernetes Package Manager |
+| CloudWatch | Monitoring & Logging |
 
-### Streaming Service (`backend/streamingService/.env`)
-```ini
-PORT=3002
-MONGO_URI=mongodb://localhost:27017/streamingapp
-JWT_SECRET=changeme
-CLIENT_URLS=http://localhost:3000
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=ap-south-1
-AWS_S3_BUCKET=
-AWS_CDN_URL=
-STREAMING_PUBLIC_URL=http://localhost:3002
-```
+---
 
-### Admin Service (`backend/adminService/.env`)
-```ini
-PORT=3003
-MONGO_URI=mongodb://localhost:27017/streamingapp
-JWT_SECRET=changeme
-CLIENT_URLS=http://localhost:3000
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_REGION=ap-south-1
-AWS_S3_BUCKET=
-```
+# Project Architecture
 
-### Chat Service (`backend/chatService/.env`)
-```ini
-PORT=3004
-MONGO_URI=mongodb://localhost:27017/streamingapp
-JWT_SECRET=changeme
-CLIENT_URLS=http://localhost:3000
-```
+GitHub → Jenkins → Docker → Amazon ECR → Amazon EKS → Helm → CloudWatch
 
-### Frontend build variables (`frontend/.env` or Docker build args)
-```ini
-REACT_APP_AUTH_API_URL=http://localhost:3001/api
-REACT_APP_STREAMING_API_URL=http://localhost:3002/api
-REACT_APP_STREAMING_PUBLIC_URL=http://localhost:3002
-REACT_APP_ADMIN_API_URL=http://localhost:3003/api/admin
-REACT_APP_CHAT_API_URL=http://localhost:3004/api/chat
-REACT_APP_CHAT_SOCKET_URL=http://localhost:3004
-```
+---
 
-## Running with Docker Compose
-
-1. Populate the environment variables above (or rely on the defaults baked into `docker-compose.yml`).
-2. Build and start the stack:
-   ```bash
-   docker-compose up --build
-   ```
-3. Navigate to `http://localhost:3000` for the web app.
-
-The compose file provisions MongoDB plus all four Node.js microservices. S3 credentials are optional for local testing—you can still browse seeded metadata, but streaming requires valid S3 objects.
-
-## Local Development
-
-Install dependencies for each service:
+# Clone Repository
 
 ```bash
-# auth service
-cd backend/authService && npm install
-
-# streaming service
-cd ../streamingService && npm install
-
-# admin service
-cd ../adminService && npm install
-
-# chat service
-cd ../chatService && npm install
-
-# frontend
-cd ../../frontend && npm install
+git clone https://github.com/YOUR_USERNAME/StreamingApp.git
+cd StreamingApp
 ```
 
-Run the services (in separate terminals) after starting MongoDB:
+---
+
+# Docker Setup
+
+## Backend Build
 
 ```bash
-cd backend/authService && npm run dev
-cd backend/streamingService && npm run dev
-cd backend/adminService && npm run dev
-cd backend/chatService && npm run dev
-cd frontend && npm start
+cd backend
+docker build -t streaming-backend .
 ```
 
-## Feature Highlights
+## Frontend Build
 
-- **S3-backed adaptive streaming** with secure signed uploads for admins.
-- **Dedicated admin microservice** for video ingestion, metadata management, and featured curation.
-- **Real-time chat** overlay in the player (Socket.IO + persistent message history).
-- **Modern React experience** featuring cinematic hero sections, dynamic carousels, and responsive design.
-- **Role-aware access control** across frontend routes and backend microservices.
+```bash
+cd frontend
+docker build -t streaming-frontend .
+```
 
-## Testing
+---
 
-Automated tests are not yet included. Recommended smoke checks:
+# AWS ECR Setup
 
-1. Register and log in through the web UI.
-2. Upload a small video + thumbnail via the admin dashboard (requires valid S3 credentials).
-3. Confirm playback from the browse page and verify that chat messages broadcast between multiple browser tabs.
+## Create ECR Repositories
 
-## License
+```bash
+aws ecr create-repository --repository-name streaming-backend
 
-MIT © StreamFlix Team
+aws ecr create-repository --repository-name streaming-frontend
+```
+
+---
+
+# Jenkins Pipeline
+
+Jenkins automates:
+
+- Code Pull
+- Docker Build
+- Docker Push
+- Kubernetes Deployment
+
+---
+
+# EKS Cluster Creation
+
+```bash
+eksctl create cluster \
+--name streaming-cluster \
+--region ap-south-1 \
+--nodegroup-name workers \
+--node-type t3.medium \
+--nodes 2
+```
+
+---
+
+# Kubernetes Deployment
+
+```bash
+kubectl apply -f kubernetes/
+```
+
+---
+
+# Helm Deployment
+
+```bash
+helm install streaming-release ./helm/streaming-app
+```
+
+---
+
+# Monitoring
+
+CloudWatch is used for:
+
+- Pod Logs
+- Container Logs
+- Metrics
+- Monitoring
+
+---
+
+# Scaling
+
+```bash
+kubectl scale deployment backend --replicas=4
+```
+
+---
+
+# Screenshots
+
+Screenshots available in:
+
+<img width="940" height="449" alt="image" src="https://github.com/user-attachments/assets/e627a48b-fcaf-46e3-920a-2eb3ec7f9d74" />
+
+<img width="940" height="385" alt="image" src="https://github.com/user-attachments/assets/14f42073-b721-4001-a01b-5d5c01caada9" />
+
+<img width="940" height="253" alt="image" src="https://github.com/user-attachments/assets/266e12aa-93e5-4c18-b91c-0a7c69085759" />
+
+<img width="940" height="503" alt="image" src="https://github.com/user-attachments/assets/a49c3262-2017-4bc3-a6f3-8fbbc714e007" />
+
+<img width="940" height="502" alt="image" src="https://github.com/user-attachments/assets/9105c8c9-8b70-485e-9757-424cd180cc06" />
+
+<img width="940" height="506" alt="image" src="https://github.com/user-attachments/assets/c4f961ef-cfaf-4f2b-80e0-8fd62bbeb9fd" />
+
+<img width="940" height="380" alt="image" src="https://github.com/user-attachments/assets/381ea768-a8b2-43b5-8dc8-fb62a4bb37e3" />
+
+<img width="940" height="205" alt="image" src="https://github.com/user-attachments/assets/9e87a27c-8fba-4bf6-bfd6-a9eaf73dcc32" />
+
+<img width="940" height="436" alt="image" src="https://github.com/user-attachments/assets/c1313a6a-fbe6-4ffa-acbc-5993c90bd09c" />
+
+<img width="940" height="237" alt="image" src="https://github.com/user-attachments/assets/c8064088-a00a-49dc-ba41-72730996ca69" />
+
+<img width="940" height="431" alt="image" src="https://github.com/user-attachments/assets/dda1850d-03c9-48cc-b751-6d6efd041d6a" />
+
+<img width="940" height="539" alt="image" src="https://github.com/user-attachments/assets/69d1586a-6103-4aad-bd8c-480392da043f" />
+
+<img width="940" height="456" alt="image" src="https://github.com/user-attachments/assets/1f0d250e-4e8e-429a-8879-ee496b4c2c17" />
+
+<img width="940" height="451" alt="image" src="https://github.com/user-attachments/assets/d77d2b79-af5d-4c80-9d6b-b219dc44dede" />
+
+<img width="940" height="442" alt="image" src="https://github.com/user-attachments/assets/8f1c61ee-5677-40b8-aa42-a8b763e99786" />
+
+<img width="940" height="256" alt="image" src="https://github.com/user-attachments/assets/2f243b7f-cb4b-4e1f-85ee-f62f778fd8e1" />
+
+<img width="940" height="482" alt="image" src="https://github.com/user-attachments/assets/de725739-de20-4de1-a844-a5df33f36119" />
+
+<img width="940" height="549" alt="image" src="https://github.com/user-attachments/assets/7c4c3336-89a0-4ddd-9556-5a051de81a2a" />
+
+<img width="940" height="501" alt="image" src="https://github.com/user-attachments/assets/ff0f4b5f-d6d6-4712-8f1d-ce4d70ab6ff7" />
+
+<img width="940" height="435" alt="image" src="https://github.com/user-attachments/assets/c78b1134-1b59-4f00-ac73-df4e04c16610" />
+
+<img width="940" height="454" alt="image" src="https://github.com/user-attachments/assets/62a13d32-6c12-45eb-83f0-69abf4311e3b" />
+
+<img width="940" height="498" alt="image" src="https://github.com/user-attachments/assets/5fb77856-fa04-451a-8afc-b227809f2198" />
+
+<img width="940" height="811" alt="image" src="https://github.com/user-attachments/assets/5f220204-82e3-49a6-8734-5e40e5a88158" />
+
+<img width="940" height="482" alt="image" src="https://github.com/user-attachments/assets/05aa408e-0f17-4cf3-9e12-b6b14cb53c29" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
