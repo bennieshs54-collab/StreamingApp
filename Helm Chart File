@@ -4,3 +4,75 @@ description: MERN Streaming Application
 type: application
 version: 0.1.0
 appVersion: "1.0"
+
+ Helm Values File
+
+helm/streamingapp/values.yaml
+
+backend:
+  image:
+    repository: YOUR_BACKEND_ECR_URL
+    tag: latest
+
+frontend:
+  image:
+    repository: YOUR_FRONTEND_ECR_URL
+    tag: latest
+Helm Backend Deployment Template
+
+helm/streamingapp/templates/backend-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: backend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+      - name: backend
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+
+        ports:
+        - containerPort: 5000
+Helm Frontend Deployment Template
+
+helm/streamingapp/templates/frontend-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+      - name: frontend
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+
+        ports:
+        - containerPort: 80
