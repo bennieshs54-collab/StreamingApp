@@ -22,7 +22,7 @@ spec:
         - containerPort: 5000
 
 
-6. Backend Service
+Backend Service
 
 k8s/backend-service.yaml
 
@@ -41,7 +41,8 @@ spec:
       targetPort: 5000
 
   type: ClusterIP
-7. Frontend Deployment
+
+Frontend Deployment
 
 k8s/frontend-deployment.yaml
 
@@ -69,7 +70,7 @@ spec:
 
         ports:
         - containerPort: 80
-8. Frontend Service
+ Frontend Service
 
 k8s/frontend-service.yaml
 
